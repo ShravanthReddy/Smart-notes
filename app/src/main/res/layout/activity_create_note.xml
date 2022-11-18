@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/colorBlack"
+    android:layout_height="match_parent"
+    tools:context=".activities.CreateNote">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_back_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="45dp"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="95dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:textSize="30sp"
+                    android:background="@android:color/transparent"
+                    android:gravity="top|left"
+                    android:text=""
+                    android:inputType="text"
+                    android:textColor="@color/colorWhite"
+                    android:maxLines="@integer/material_motion_duration_medium_2"
+                    app:layout_constraintTop_toBottomOf="@+id/back_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="30dp"
+                    android:nextFocusDown="@+id/editTextNote"
+                    android:scrollHorizontally="false" />
+
+                <EditText
+                    android:id="@+id/editTextNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:textSize="20sp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:gravity="top|left"
+                    android:text=""
+                    android:textColor="@color/colorWhite"
+                    android:inputType="textMultiLine"
+                    app:layout_constraintTop_toBottomOf="@+id/back_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="@font/poppins"
+                    android:layout_marginStart="30dp"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
