@@ -63,12 +63,8 @@ public class CreateNote extends AppCompatActivity {
         poppins_bold = ResourcesCompat.getFont(this, R.font.poppins_bold);
         poppins_regular = ResourcesCompat.getFont(this, R.font.poppins_regular);
 
-        Spannable span = new SpannableString("Note Title\nNote");
-        span.setSpan(new CustomTypeFaceSpan(poppins_bold), 0, 10, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        span.setSpan(new CustomTypeFaceSpan(poppins_regular), 11, 15, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        span.setSpan(new AbsoluteSizeSpan(78), 0, 10, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        span.setSpan(new AbsoluteSizeSpan(58), 11, 15, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        editText.setHint(span);
+        //calling function to span hint text
+        changeTextHint(editText, poppins_bold, poppins_regular, 78, 58);
 
         //requesting focus to text field
         editText.requestFocus();
@@ -78,7 +74,7 @@ public class CreateNote extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                finish(); //closing the activity
 
             }
         });
@@ -139,8 +135,6 @@ public class CreateNote extends AppCompatActivity {
 
                 }
 
-                text = editText.getText().toString();
-
             }
 
             @Override
@@ -162,6 +156,7 @@ public class CreateNote extends AppCompatActivity {
             span.setSpan(new AbsoluteSizeSpan(78), 0, endTitle, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             editText.setText(span, TextView.BufferType.SPANNABLE);
 
+            //after span setting cursor to the end of the string
             editText.setSelection(end);
 
         }
@@ -185,27 +180,35 @@ public class CreateNote extends AppCompatActivity {
         }
     }
 
+    //function to change font and size properties of edittext
     public static void changeEditTextProperties(EditText editText, Typeface font, int fontSize) {
-        editText.setTextSize(fontSize);
-        editText.setTypeface(font);
+        editText.setTextSize(fontSize); //changing the font size
+        editText.setTypeface(font); //changing the font
 
     }
 
+    //when application is paused
     @Override
     protected void onPause() {
         super.onPause();
 
+        //getting string from editText
+        text = editText.getText().toString();
+
+        //if text has been changed in the activity
         if (textChanged) {
 
             textChanged = false;
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
 
+            //executing the process of saving the text to db in a background thread
             executor.execute(() -> {
-                if (editText.getText().length() != 0) {
-                    saveText();
+                if (editText.getText().length() != 0) { //if length is != 0
+                    saveText(); // calling save text function to save the note to db
 
                 } else if(id != 0) {
+                    // if an id is present and whole text is removed, deleting the id from db
                     deleteNote();
                 }
 
@@ -215,26 +218,42 @@ public class CreateNote extends AppCompatActivity {
 
     }
 
+    //function to save text to db
     private void saveText() {
 
-        String title = text.substring(0, endTitle);
-        String note = text.substring(endTitle + 1);
+        String title = text.substring(0, endTitle); //getting title from the string
+        String note = text.substring(endTitle + 1); //getting notes from the string
+        //creating time stamp
         String datetime = new SimpleDateFormat("EEEE, dd-MM-yyyy HH:mm a", Locale.getDefault()).format(new Date());
-        Note mainNote = new Note(title, datetime, note);
+        Note mainNote = new Note(title, datetime, note); //using above var making note object
 
+        //if no id present, creating a new table in db
         if (id == 0) {
             NotesDatabase.getDatabase(getApplicationContext()).notesDao().insertNote(mainNote);
             arrayList = NotesDatabase.getDatabase(getApplicationContext()).notesDao().getAllNotes();
             id = arrayList.get(0).getId();
 
+            //else updating the db using id
         } else {
             NotesDatabase.getDatabase(getApplicationContext()).notesDao().updateNote(title, datetime, note, id);
 
         }
     }
 
+    //deleting the table from db using id
     private void deleteNote() {
         NotesDatabase.getDatabase(getApplicationContext()).notesDao().deleteByUserId(id);
+
+    }
+
+    //function to span hint text
+    private void changeTextHint(EditText editText, Typeface poppins_bold, Typeface poppins_regular, int titleFontSize, int noteFontSize) {
+        Spannable span = new SpannableString("Note Title\nNote");
+        span.setSpan(new CustomTypeFaceSpan(poppins_bold), 0, 10, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        span.setSpan(new CustomTypeFaceSpan(poppins_regular), 11, 15, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        span.setSpan(new AbsoluteSizeSpan(titleFontSize), 0, 10, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        span.setSpan(new AbsoluteSizeSpan(noteFontSize), 11, 15, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        editText.setHint(span);
 
     }
 
