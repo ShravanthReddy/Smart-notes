@@ -4,29 +4,29 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
 import com.shravanth.smartnotes.R;
-import com.shravanth.smartnotes.databinding.ActivityMainBinding;
+import com.shravanth.smartnotes.database.NotesDatabase;
+import com.shravanth.smartnotes.entities.Note;
 
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
     // private ActivityMainBinding binding;
     private ImageView addButton;
+    private ArrayList<String> noteList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         addButton = findViewById(R.id.add_button);
+
         // binding = ActivityMainBinding.inflate(getLayoutInflater());
         // setContentView(binding.getRoot());
 
@@ -52,5 +53,29 @@ public class MainActivity extends AppCompatActivity {
     protected void openCreateNote() {
         Intent intent = new Intent(MainActivity.this, CreateNote.class);
         startActivity(intent);
+
+    }
+
+    public void displayNote() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            List<Note> arrayList;
+            arrayList = NotesDatabase.getDatabase(getApplicationContext()).notesDao().getAllNotes();
+            List<Note> finalArrayList = arrayList;
+            handler.post(() -> {
+                System.out.println(finalArrayList);
+
+            });
+        });
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        displayNote();
+
     }
 }

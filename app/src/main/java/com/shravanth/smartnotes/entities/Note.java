@@ -19,7 +19,7 @@ public class Note implements Serializable {
     @ColumnInfo(name = "datetime")
     private String dateTime;
 
-    @ColumnInfo(name = "note_text")
+    @ColumnInfo(name = "noteText")
     private String noteText;
 
     public Note(String title, String dateTime, String noteText) {

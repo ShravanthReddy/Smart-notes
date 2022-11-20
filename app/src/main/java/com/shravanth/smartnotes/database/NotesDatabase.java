@@ -9,8 +9,9 @@ import androidx.room.RoomDatabase;
 import com.shravanth.smartnotes.dao.NoteDao;
 import com.shravanth.smartnotes.entities.Note;
 
-@Database(entities = Note.class, version = 1, exportSchema = false)
+@Database(entities = Note.class, version = 2, exportSchema = false)
 public abstract class NotesDatabase extends RoomDatabase {
+
     private static NotesDatabase notesDatabase;
 
     public static synchronized NotesDatabase getDatabase(Context context) {
@@ -18,11 +19,13 @@ public abstract class NotesDatabase extends RoomDatabase {
             notesDatabase = Room.databaseBuilder(
                     context,
                     NotesDatabase.class,
-                    "notes_db"
+                    "smartNotes"
+
             ).build();
         }
         return notesDatabase;
     }
 
     public abstract NoteDao notesDao();
+
 }

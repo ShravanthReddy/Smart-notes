@@ -21,10 +21,23 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="45dp"/>
 
+        <TextView
+            android:id="@+id/TVdatetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Saturday, 11/19/2022 23:44"
+            android:textColor="@color/colorWhite"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@+id/back_button"
+            android:layout_marginTop="5dp"/>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="95dp"
+            app:layout_constraintTop_toBottomOf="@+id/TVdatetime"
+            android:layout_marginTop="100dp"
             android:layout_marginBottom="20dp">
 
             <LinearLayout
@@ -45,43 +58,22 @@
                     android:background="@android:color/transparent"
                     android:gravity="top|left"
                     android:text=""
-                    android:inputType="text"
+                    android:hint="Note title\nNote"
+                    android:textColorHint="@color/colorPrimary"
+                    android:inputType="textMultiLine"
                     android:textColor="@color/colorWhite"
-                    android:maxLines="@integer/material_motion_duration_medium_2"
                     app:layout_constraintTop_toBottomOf="@+id/back_button"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="30dp"
-                    android:fontFamily="@font/poppins_semibold"
+                    android:fontFamily="@font/poppins_bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="30dp"
-                    android:nextFocusDown="@+id/editTextNote"
                     android:scrollHorizontally="false" />
-
-                <EditText
-                    android:id="@+id/editTextNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:cursorVisible="true"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:textSize="20sp"
-                    android:background="@android:color/transparent"
-                    android:ems="10"
-                    android:gravity="top|left"
-                    android:text=""
-                    android:textColor="@color/colorWhite"
-                    android:inputType="textMultiLine"
-                    app:layout_constraintTop_toBottomOf="@+id/back_button"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="30dp"
-                    android:fontFamily="@font/poppins"
-                    android:layout_marginStart="30dp"/>
 
             </LinearLayout>
 
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
