@@ -44,6 +44,8 @@ public class CreateNote extends AppCompatActivity {
     private int id;
     private boolean textChanged = false;
     private List<Note> arrayList;
+    private String title;
+    private String note;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +103,7 @@ public class CreateNote extends AppCompatActivity {
                 endTitle = charSequence.toString().indexOf("\n");
                 int length = editText.getText().length();
 
+                System.out.println("New line: " + endTitle + " Length: " + length);
                 //checking if a line break has been made
                 if (endTitle > -1) {
 
@@ -202,10 +205,20 @@ public class CreateNote extends AppCompatActivity {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
 
+            if (endTitle > 0 & text.length() > endTitle + 1) {
+                title = text.substring(0, endTitle); //getting title from the string
+                note = text.substring(endTitle + 1); //getting notes from the string
+
+            } else if (editText.getText().length() != 0) {
+                title = text; //getting title from the string
+                note = null;
+
+            }
+
             //executing the process of saving the text to db in a background thread
             executor.execute(() -> {
                 if (editText.getText().length() != 0) { //if length is != 0
-                    saveText(); // calling save text function to save the note to db
+                    saveText(title, note); // calling save text function to save the note to db
 
                 } else if(id != 0) {
                     // if an id is present and whole text is removed, deleting the id from db
@@ -219,10 +232,8 @@ public class CreateNote extends AppCompatActivity {
     }
 
     //function to save text to db
-    private void saveText() {
+    private void saveText(String title, String note) {
 
-        String title = text.substring(0, endTitle); //getting title from the string
-        String note = text.substring(endTitle + 1); //getting notes from the string
         //creating time stamp
         String datetime = new SimpleDateFormat("EEEE, dd-MM-yyyy HH:mm a", Locale.getDefault()).format(new Date());
         Note mainNote = new Note(title, datetime, note); //using above var making note object

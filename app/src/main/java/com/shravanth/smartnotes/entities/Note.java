@@ -65,6 +65,7 @@ public class Note implements Serializable {
     public String toString() {
         return "Note{" +
                 "title='" + title + '\'' +
+                ",note='" + noteText + '\'' +
                 ", dateTime='" + dateTime + '\'' +
                 '}';
     }

@@ -15,7 +15,9 @@
         <activity
             android:name=".activities.CreateNote"
             android:screenOrientation="portrait"
-            android:exported="false">
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

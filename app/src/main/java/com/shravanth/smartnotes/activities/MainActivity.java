@@ -24,37 +24,39 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    // private ActivityMainBinding binding;
     private ImageView addButton;
-    private ArrayList<String> noteList;
+    private List<Note> noteList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //setting the statusbar to transparetn
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
+        //initialising addbutton
         addButton = findViewById(R.id.add_button);
 
-        // binding = ActivityMainBinding.inflate(getLayoutInflater());
-        // setContentView(binding.getRoot());
-
+        //when add button is clicked
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //openCreateNote func is called which creates CreateNote activity
                 openCreateNote();
             }
         });
 
     }
 
+    //function creates an intent to start CreateNote activity
     protected void openCreateNote() {
         Intent intent = new Intent(MainActivity.this, CreateNote.class);
         startActivity(intent);
 
     }
+
 
     public void displayNote() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
