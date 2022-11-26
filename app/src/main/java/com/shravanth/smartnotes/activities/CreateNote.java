@@ -1,9 +1,16 @@
 package com.shravanth.smartnotes.activities;
 
+import static android.text.Html.toHtml;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Html;
 import android.text.SpannableString;
-import android.util.Log;
+import android.view.MotionEvent;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +41,6 @@ import java.util.concurrent.Executors;
 public class CreateNote extends AppCompatActivity {
 
     private ImageView backButton;
-    private TextView datetimeTV;
     private EditText editText;
     private int endTitle;
     private String text;
@@ -46,40 +52,73 @@ public class CreateNote extends AppCompatActivity {
     private List<Note> arrayList;
     private String title;
     private String note;
+    private int titleFontSize;
+    private int noteFontSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_note);
 
-        //changing status bar to transparent
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+//        //changing status bar to transparent
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         //initializing layout widgets
         backButton = findViewById(R.id.back_button);
         editText = findViewById(R.id.editText);
-        datetimeTV = findViewById(R.id.TVdatetime);
 
+        //
         //creating typefaces
         poppins_bold = ResourcesCompat.getFont(this, R.font.poppins_bold);
         poppins_regular = ResourcesCompat.getFont(this, R.font.poppins_regular);
 
+        titleFontSize = (int) (getResources().getDimension(R.dimen.titleFontSize)/getResources().getDisplayMetrics().density);
+        noteFontSize = (int) (getResources().getDimension(R.dimen.noteFontSize)/getResources().getDisplayMetrics().density);
+
         //calling function to span hint text
-        changeTextHint(editText, poppins_bold, poppins_regular, 78, 58);
+        styleTextHint(editText, poppins_bold, poppins_regular, titleFontSize, noteFontSize);
 
         //requesting focus to text field
         editText.requestFocus();
-        datetimeTV.setText(new SimpleDateFormat("EEEE, dd MM yyyy HH:mm a", Locale.getDefault()).format(new Date()));
 
-        //on clicking back button
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish(); //closing the activity
+//        //on clicking back button
+//        backButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                finish(); //closing the activity
+//
+//            }
+//        });
+
+        boolean isView = getIntent().getBooleanExtra("isView", true);
+
+        if (!isView) {
+            Note noteList = (Note) getIntent().getSerializableExtra("notes");
+            id = getIntent().getIntExtra("id", 0);
+            System.out.println("Activity started and id value: " + id);
+
+            if (noteList.getNoteText() != null) {
+                editText.setText(noteList.getTitle() + "\n" + noteList.getNoteText());
+
+            } else {
+                editText.setText(noteList.getTitle());
 
             }
-        });
+
+            String writtenText = editText.getText().toString();
+            endTitle = writtenText.indexOf("\n");
+            if (endTitle > 0 || (writtenText.length() > 0 & endTitle != -1)) {
+                boldDone = true;
+                styleText(endTitle, writtenText.length(), titleFontSize,  editText, poppins_bold);
+
+            } else if(endTitle == -1 & writtenText.length() > 0){
+                styleText(writtenText.length(), writtenText.length(), titleFontSize, editText, poppins_bold);
+
+            }
+            changeEditTextProperties(editText, poppins_regular, noteFontSize);
+
+        }
 
         //creating text watcher for edit text field
         editText.addTextChangedListener(new TextWatcher() {
@@ -94,6 +133,7 @@ public class CreateNote extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+                System.out.println();
                 textChanged = true;
                 //creating start and end index for text field
                 int start = editText.getSelectionStart();
@@ -103,7 +143,6 @@ public class CreateNote extends AppCompatActivity {
                 endTitle = charSequence.toString().indexOf("\n");
                 int length = editText.getText().length();
 
-                System.out.println("New line: " + endTitle + " Length: " + length);
                 //checking if a line break has been made
                 if (endTitle > -1) {
 
@@ -113,16 +152,15 @@ public class CreateNote extends AppCompatActivity {
                         //linebreak has been done before title has been written and writing is been done now
                         if ((start > 0 & endTitle == start) || (endTitle + 1 == start & start < length)) {
                             //removing any previously written spans from the field
-                            System.out.println("Span removal 1");
                             spanRemoval(editText);
                         }
 
                         //changing the text size and font family
-                        changeEditTextProperties(editText, poppins_regular, 22);
+                        changeEditTextProperties(editText, poppins_regular, noteFontSize);
                         boldDone = true;
 
                         //calling change text function
-                        changeText(endTitle, end, start, editText, poppins_bold);
+                        styleText(endTitle, end, titleFontSize, editText, poppins_bold);
 
                     }
 
@@ -130,10 +168,14 @@ public class CreateNote extends AppCompatActivity {
                 } else if (start > 0) {
 
                     //changing text size and font family
-                    changeEditTextProperties(editText, poppins_bold, 30);
+                    changeEditTextProperties(editText, poppins_bold, titleFontSize);
                     boldDone = false;
 
                     //calling spanremoval function
+                    spanRemoval(editText);
+
+                } else if (editText.getText().length() == 0) {
+                    changeEditTextProperties(editText, poppins_bold, titleFontSize);
                     spanRemoval(editText);
 
                 }
@@ -150,19 +192,16 @@ public class CreateNote extends AppCompatActivity {
     }
 
     //change text function
-    public static void changeText(int endTitle, int end, int start, EditText editText, Typeface poppins_bold) {
-        if ((end == endTitle + 1 & endTitle != 0) || (endTitle == 0 & end == endTitle + 2) || (endTitle == start) || (endTitle > start)) {
+    public static void styleText(int endTitle, int end, int titleFontSize, EditText editText, Typeface poppins_bold) {
 
             //creates span where title is styled to bold and text size changed
             Spannable span = editText.getText();
             span.setSpan(new CustomTypeFaceSpan(poppins_bold), 0, endTitle, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-            span.setSpan(new AbsoluteSizeSpan(78), 0, endTitle, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            span.setSpan(new AbsoluteSizeSpan(titleFontSize, true), 0, endTitle, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             editText.setText(span, TextView.BufferType.SPANNABLE);
 
             //after span setting cursor to the end of the string
             editText.setSelection(end);
-
-        }
 
     }
 
@@ -202,10 +241,11 @@ public class CreateNote extends AppCompatActivity {
         if (textChanged) {
 
             textChanged = false;
+            //creating an executor and a handler
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
 
-            if (endTitle > 0 & text.length() > endTitle + 1) {
+            if (endTitle >= 0 & text.length() > endTitle + 1) {
                 title = text.substring(0, endTitle); //getting title from the string
                 note = text.substring(endTitle + 1); //getting notes from the string
 
@@ -223,12 +263,12 @@ public class CreateNote extends AppCompatActivity {
                 } else if(id != 0) {
                     // if an id is present and whole text is removed, deleting the id from db
                     deleteNote();
+
                 }
 
                 handler.post(() -> {});
             });
         }
-
     }
 
     //function to save text to db
@@ -258,14 +298,37 @@ public class CreateNote extends AppCompatActivity {
     }
 
     //function to span hint text
-    private void changeTextHint(EditText editText, Typeface poppins_bold, Typeface poppins_regular, int titleFontSize, int noteFontSize) {
-        Spannable span = new SpannableString("Note Title\nNote");
-        span.setSpan(new CustomTypeFaceSpan(poppins_bold), 0, 10, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        span.setSpan(new CustomTypeFaceSpan(poppins_regular), 11, 15, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        span.setSpan(new AbsoluteSizeSpan(titleFontSize), 0, 10, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        span.setSpan(new AbsoluteSizeSpan(noteFontSize), 11, 15, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    private void styleTextHint(EditText editText, Typeface poppins_bold, Typeface poppins_regular, int titleFontSize, int noteFontSize) {
+        Spannable span = new SpannableString(" Note Title\n Note");
+        span.setSpan(new CustomTypeFaceSpan(poppins_bold), 0, 11, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        span.setSpan(new CustomTypeFaceSpan(poppins_regular), 11, 17, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        span.setSpan(new AbsoluteSizeSpan(titleFontSize, true), 0, 11, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        span.setSpan(new AbsoluteSizeSpan(noteFontSize, true), 11, 17, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         editText.setHint(span);
 
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        View view = getCurrentFocus();
+        boolean ret = super.dispatchTouchEvent(event);
+
+        if (view instanceof EditText) {
+            View w = getCurrentFocus();
+            int scrcoords[] = new int[2];
+            w.getLocationOnScreen(scrcoords);
+            float x = event.getRawX() + w.getLeft() - scrcoords[0];
+            float y = event.getRawY() + w.getTop() - scrcoords[1];
+
+            System.out.println(event);
+            if (event.getAction() == MotionEvent.ACTION_UP
+                    && (x < w.getLeft() || x >= w.getRight()
+                    || y < w.getTop() || y > w.getBottom()) ) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
+            }
+        }
+        return ret;
     }
 
 }

@@ -22,6 +22,9 @@ public interface NoteDao {
     @Query("DELETE FROM notes WHERE id = :id")
     void deleteByUserId(int id);
 
+    @Query("SELECT EXISTS (SELECT 1 FROM notes WHERE id = :id)")
+    boolean exists(int id);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertNote(Note note);
 
