@@ -35,11 +35,11 @@ public class CalculateActivity extends AppCompatActivity {
 
             Calculation calculation = new Calculation(givenText);
             result = calculation.doCalculation();
+
             if (result == "W") {
                 result = "Wrong equation";
 
             }
-            System.out.println(result);
 
             handler.post(() -> {
                 if (result == "Wrong equation") {

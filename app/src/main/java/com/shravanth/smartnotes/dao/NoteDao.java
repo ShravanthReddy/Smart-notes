@@ -25,6 +25,12 @@ public interface NoteDao {
     @Query("SELECT EXISTS (SELECT 1 FROM notes WHERE id = :id)")
     boolean exists(int id);
 
+    @Query("SELECT * FROM notes WHERE id = :id")
+    List<Note> getNote(int id);
+
+    @Query("SELECT COUNT(*) FROM notes")
+    int dbSize();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertNote(Note note);
 

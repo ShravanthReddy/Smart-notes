@@ -3,40 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/colorBlack"
     android:layout_height="match_parent"
     tools:context=".activities.CreateNote">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
+            app:liftOnScroll="true"
+            android:fitsSystemWindows="true"
+            android:layout_marginBottom="4dp"
+            tools:ignore="MissingConstraints">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:titleCentered="true"
+                app:menu="@menu/top_app_bar"
                 app:navigationIcon="@drawable/ic_back_button" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_marginTop="65dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="20dp">
+            android:fitsSystemWindows="true"
+            android:paddingBottom="80dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clickable="true"
                 android:orientation="vertical"
-                android:focusableInTouchMode="true"
                 android:id="@+id/linearLayout">
 
                 <EditText
@@ -44,35 +42,41 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:cursorVisible="true"
+                    android:backgroundTint="@android:color/transparent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:textSize="@dimen/titleFontSize"
-                    android:background="@android:color/transparent"
                     android:gravity="top|left"
-                    android:text=""
-                    android:textCursorDrawable="@drawable/cursor"
-                    android:textColorHint="@color/colorPrimary"
                     android:inputType="textCapSentences|textMultiLine"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintTop_toBottomOf="@+id/back_button"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="30dp"
+                    android:textColorHint="@color/md_theme_dark_surfaceVariant"
+                    android:layout_marginEnd="20dp"
                     android:fontFamily="@font/poppins_bold"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginStart="30dp"
+                    android:layout_marginStart="20dp"
+                    android:paddingBottom="90dp"
                     android:scrollHorizontally="false" />
 
             </LinearLayout>
 
-
         </androidx.core.widget.NestedScrollView>
 
-    </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:fitsSystemWindows="true"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:hideOnScroll="true"
+        style="@style/Widget.Material3.BottomAppBar"
+        app:navigationIcon="@drawable/ic_search"
+        />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        app:hideMotionSpec="@anim/nav_default_enter_anim"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_account"
+        app:layout_anchor="@id/bottomAppBar"
+        />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

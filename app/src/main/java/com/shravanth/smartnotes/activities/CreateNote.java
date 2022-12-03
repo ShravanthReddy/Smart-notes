@@ -1,22 +1,18 @@
 package com.shravanth.smartnotes.activities;
 
-import static android.text.Html.toHtml;
-
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Html;
 import android.text.SpannableString;
-import android.view.MotionEvent;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
+
+import android.view.MenuItem;
+
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
-
-import android.graphics.Color;
+import androidx.core.view.WindowCompat;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,9 +20,11 @@ import android.text.Spannable;
 import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.shravanth.smartnotes.R;
 import com.shravanth.smartnotes.database.NotesDatabase;
 import com.shravanth.smartnotes.entities.Note;
@@ -40,13 +38,15 @@ import java.util.concurrent.Executors;
 
 public class CreateNote extends AppCompatActivity {
 
-    private ImageView backButton;
+    //initialising views
     private EditText editText;
+    private FloatingActionButton floatingActionButton;
+    private MaterialToolbar topAppBar;
+
+    //initialising int, string, list and boolean variables
     private int endTitle;
     private String text;
     private boolean boldDone = false;
-    private Typeface poppins_bold;
-    private Typeface poppins_regular;
     private int id;
     private boolean textChanged = false;
     private List<Note> arrayList;
@@ -55,67 +55,79 @@ public class CreateNote extends AppCompatActivity {
     private int titleFontSize;
     private int noteFontSize;
 
+    //initialising typefaces
+    private Typeface poppins_bold;
+    private Typeface poppins_regular;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_note);
 
-//        //changing status bar to transparent
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        //setting the content to go behind the status bar
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         //initializing layout widgets
-        backButton = findViewById(R.id.back_button);
         editText = findViewById(R.id.editText);
+        topAppBar = findViewById(R.id.topAppBar);
+        floatingActionButton = findViewById(R.id.floatingActionButton);
 
-        //
+        //when the navigation button clicked on the topappbar, finishing the activity
+        topAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         //creating typefaces
         poppins_bold = ResourcesCompat.getFont(this, R.font.poppins_bold);
         poppins_regular = ResourcesCompat.getFont(this, R.font.poppins_regular);
 
+        //importing title and notes font size from dimensions
         titleFontSize = (int) (getResources().getDimension(R.dimen.titleFontSize)/getResources().getDisplayMetrics().density);
         noteFontSize = (int) (getResources().getDimension(R.dimen.noteFontSize)/getResources().getDisplayMetrics().density);
 
         //calling function to span hint text
         styleTextHint(editText, poppins_bold, poppins_regular, titleFontSize, noteFontSize);
 
-        //requesting focus to text field
-        editText.requestFocus();
-
-//        //on clicking back button
-//        backButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                finish(); //closing the activity
-//
-//            }
-//        });
-
+        //getting boolean isView or not from the intent called
         boolean isView = getIntent().getBooleanExtra("isView", true);
 
+        //if not a new note
         if (!isView) {
+            //getting the notes from the mainactivity
             Note noteList = (Note) getIntent().getSerializableExtra("notes");
+            //getting id called from the mainactivity and assigning it to id
             id = getIntent().getIntExtra("id", 0);
-            System.out.println("Activity started and id value: " + id);
 
+            //if notetext is not null setting notetitle and notetext it to editText view
             if (noteList.getNoteText() != null) {
                 editText.setText(noteList.getTitle() + "\n" + noteList.getNoteText());
 
             } else {
+                //setting only title to edittext
                 editText.setText(noteList.getTitle());
 
             }
 
+            //getting the text from edittext view and assigning it to written text string
             String writtenText = editText.getText().toString();
+            //getting index of the line break
             endTitle = writtenText.indexOf("\n");
+
             if (endTitle > 0 || (writtenText.length() > 0 & endTitle != -1)) {
                 boldDone = true;
+
+                //calling styletext function to style the text
                 styleText(endTitle, writtenText.length(), titleFontSize,  editText, poppins_bold);
 
             } else if(endTitle == -1 & writtenText.length() > 0){
+                //calling styletext function to style the text till the length of the text
                 styleText(writtenText.length(), writtenText.length(), titleFontSize, editText, poppins_bold);
 
             }
+            //changing edittext properties
             changeEditTextProperties(editText, poppins_regular, noteFontSize);
 
         }
@@ -149,6 +161,7 @@ public class CreateNote extends AppCompatActivity {
                     //if bold done or No title was written or start > 0 and linebreak has been done before title has been written and writing title now
                     if (!boldDone || ( endTitle == 0 & start != 0 ) || ( start > 0 & endTitle == start) || ((endTitle > start) & (start > 0)) || (endTitle + 1 == start & start < length)) {
 
+
                         //linebreak has been done before title has been written and writing is been done now
                         if ((start > 0 & endTitle == start) || (endTitle + 1 == start & start < length)) {
                             //removing any previously written spans from the field
@@ -157,10 +170,11 @@ public class CreateNote extends AppCompatActivity {
 
                         //changing the text size and font family
                         changeEditTextProperties(editText, poppins_regular, noteFontSize);
-                        boldDone = true;
 
                         //calling change text function
-                        styleText(endTitle, end, titleFontSize, editText, poppins_bold);
+                        styleText(endTitle, start, titleFontSize, editText, poppins_bold);
+                        boldDone = true;
+
 
                     }
 
@@ -189,11 +203,55 @@ public class CreateNote extends AppCompatActivity {
 
         });
 
+        topAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch(item.getItemId()) {
+
+                    case R.id.delete:
+                        onDeletePressed();
+                        break;
+
+                }
+                return true;
+            }
+        });
     }
 
+    public void onDeletePressed(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to delete?");
+
+        // Set Alert Title
+        builder.setTitle("Alert!");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(true);
+
+        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // When the user click yes button then app will close
+            editText.setText("");
+            finish();
+
+        });
+
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
+
+    }
     //change text function
     public static void styleText(int endTitle, int end, int titleFontSize, EditText editText, Typeface poppins_bold) {
 
+        if (end != 0) {
             //creates span where title is styled to bold and text size changed
             Spannable span = editText.getText();
             span.setSpan(new CustomTypeFaceSpan(poppins_bold), 0, endTitle, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -202,6 +260,8 @@ public class CreateNote extends AppCompatActivity {
 
             //after span setting cursor to the end of the string
             editText.setSelection(end);
+
+        }
 
     }
 
@@ -306,29 +366,6 @@ public class CreateNote extends AppCompatActivity {
         span.setSpan(new AbsoluteSizeSpan(noteFontSize, true), 11, 17, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         editText.setHint(span);
 
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        View view = getCurrentFocus();
-        boolean ret = super.dispatchTouchEvent(event);
-
-        if (view instanceof EditText) {
-            View w = getCurrentFocus();
-            int scrcoords[] = new int[2];
-            w.getLocationOnScreen(scrcoords);
-            float x = event.getRawX() + w.getLeft() - scrcoords[0];
-            float y = event.getRawY() + w.getTop() - scrcoords[1];
-
-            System.out.println(event);
-            if (event.getAction() == MotionEvent.ACTION_UP
-                    && (x < w.getLeft() || x >= w.getRight()
-                    || y < w.getTop() || y > w.getBottom()) ) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(getWindow().getCurrentFocus().getWindowToken(), 0);
-            }
-        }
-        return ret;
     }
 
 }

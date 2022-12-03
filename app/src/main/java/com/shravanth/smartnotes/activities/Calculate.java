@@ -265,7 +265,6 @@ class Calculation {
                 text = text.substring(0, numberOne.getIndex()) + answer + text.substring(numberTwo.getIndex(), text.length());
 
                 i = numberOne.getIndex() + answer.length() - 1;
-                System.out.println("In para: " + text);
 
             }
             i++;
@@ -372,7 +371,6 @@ class Calculation {
         boolean isNumberFound = false;
         numberProperties result = new numberProperties();
 
-        System.out.println(index + " " + text.length() + " " + text);
         if (Character.isWhitespace(text.charAt(index))) {
             if (index != text.length() - 1) {
                 return getNumberTwo(index + 1, text);
