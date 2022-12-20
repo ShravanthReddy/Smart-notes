@@ -6,6 +6,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.shravanth.smartnotes.encryption.EncryptedConverter;
+
 import java.io.Serializable;
 
 @Entity(tableName = "notes")

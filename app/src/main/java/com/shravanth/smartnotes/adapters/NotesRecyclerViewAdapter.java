@@ -1,5 +1,6 @@
 package com.shravanth.smartnotes.adapters;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shravanth.smartnotes.R;
@@ -57,18 +59,17 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         holder.layoutNote.setOnClickListener(new View.OnClickListener() { //creating onclick listener to the layout
             @Override
             public void onClick(View view) {
-                //calling on noteclicked function and passing notes linked to the position and the position itself
-                notesListener.onNoteClicked(notes.get(holder.getAbsoluteAdapterPosition()), holder.getAbsoluteAdapterPosition());
-
+                //calling on note clicked function and passing notes linked to the position and the position itself
+                notesListener.onNoteClicked(notes.get(holder.getAbsoluteAdapterPosition()), holder.getAbsoluteAdapterPosition(), view);
             }
         });
 
         holder.layoutNote.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                notesListener.onNoteLongClicked(notes.get(holder.getAbsoluteAdapterPosition()), holder.getAbsoluteAdapterPosition());
-
+                notesListener.onNoteLongClicked(notes.get(holder.getAbsoluteAdapterPosition()), holder.getAbsoluteAdapterPosition(), view);
                 return true;
+
             }
         });
     }

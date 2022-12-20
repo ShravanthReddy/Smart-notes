@@ -5,9 +5,5 @@
         android:id="@+id/option_1"
         android:title="Option 1"
         android:icon="@drawable/ic_delete" />
-    <item
-        android:id="@+id/option_2"
-        android:title="Option 2"
-        android:icon="@drawable/ic_back_button" />
 
 </menu>

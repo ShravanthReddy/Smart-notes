@@ -65,16 +65,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:hideOnScroll="true"
-        style="@style/Widget.Material3.BottomAppBar"
-        app:navigationIcon="@drawable/ic_search"
-        />
+        android:visibility="invisible"
+        app:navigationIcon="@drawable/ic_calculate"
+        style="@style/Widget.Material3.BottomAppBar" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
+        android:fitsSystemWindows="true"
         app:hideMotionSpec="@anim/nav_default_enter_anim"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_account"
+        app:srcCompat="@drawable/ic_calculate"
         app:layout_anchor="@id/bottomAppBar"
         />
 
