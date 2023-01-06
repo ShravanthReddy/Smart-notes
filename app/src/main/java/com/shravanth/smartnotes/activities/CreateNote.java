@@ -230,7 +230,6 @@ public class CreateNote extends AppCompatActivity {
                         if (!undoStack.contains(text)) {
                             //pushing the value to the stack
                             undoStack.push(text);
-                            System.out.println("Undo Stack: " + undoStack.toString());
 
                         }
 
